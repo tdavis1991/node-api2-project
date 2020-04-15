@@ -60,6 +60,53 @@ router.get('/:id/comments', (req, res) => {
         })
 })
 
+//Delete post using id
+router.delete('/:id', (req, res) => {
+    const id = req.params.id;
+
+    db.remove(id)
+      .then(post => {
+          if(post) {
+              console.log(post)
+              res.status(204).json({
+                  message: 'Post removed'
+              }).end()
+          }else {
+            res.status(404).json({
+                message: 'This post does not exist'
+            })
+          }
+      })
+      .catch(err => {
+          console.log(err)
+          res.status(500).json({
+              message: 'Post could not be deleted'
+          })
+      })  
+})
+
+//Creates post 
+router.post('/', (req, res) => {
+    if(!req.body.title || !req.body.contents) {
+        return res.status(400).json({
+            message: 'Missing title or content'
+        })
+    }
+
+    db.insert(req.body)
+        .then((post) => {
+            console.log(post)
+            res.status(201).json(post)
+        })
+        .catch(err => {
+            console.log(err)
+            res.status(500).json({
+                message: 'Error adding post'
+            })
+        })
+
+})
+
 
 
 module.exports = router
